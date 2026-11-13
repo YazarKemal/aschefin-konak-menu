@@ -86,10 +86,10 @@ export const menuProducts: MenuProduct[] = [
     category: "Döner",
     description: "Usta döneri, özel sosuyla buluşup sıcak servis edilir.",
     image: {
-      src: "/images/products/soslu-doner.png",
+      src: "/images/products/soslu-tavuk-doner.png",
       alt: "Soslu döner tabağı",
-      width: 469,
-      height: 363
+      width: 1536,
+      height: 1024
     },
     layout: "feature",
     reveal: "up"
@@ -100,10 +100,10 @@ export const menuProducts: MenuProduct[] = [
     category: "Döner",
     description: "Taze ekmek arasında ince dilimlenmiş döner.",
     image: {
-      src: "/images/products/ekmek-arasi-doner.png",
+      src: "/images/products/ekmek-arasi-tavuk-doner.png",
       alt: "Ekmek arası döner",
-      width: 424,
-      height: 325
+      width: 1536,
+      height: 1024
     },
     layout: "editorial",
     reveal: "left",
@@ -115,10 +115,10 @@ export const menuProducts: MenuProduct[] = [
     category: "Döner",
     description: "İnce lavaşa sarılmış, dumanı üstünde zurna döner.",
     image: {
-      src: "/images/products/zurna-doner.png",
+      src: "/images/products/zurna-tavuk-doner.png",
       alt: "Zurna döner dürüm",
-      width: 431,
-      height: 397
+      width: 1536,
+      height: 1024
     },
     layout: "standard",
     reveal: "right",
@@ -130,10 +130,10 @@ export const menuProducts: MenuProduct[] = [
     category: "Köfte",
     description: "Sıcak ekmek arasında ızgara köfte ve taze garnitür.",
     image: {
-      src: "/images/products/ekmek-arasi-kofte.png",
+      src: "/images/products/ekmek-arasi-tavuk-kofte.png",
       alt: "Ekmek arası köfte",
-      width: 451,
-      height: 353
+      width: 1536,
+      height: 1024
     },
     layout: "standard",
     reveal: "up",
@@ -147,8 +147,8 @@ export const menuProducts: MenuProduct[] = [
     image: {
       src: "/images/products/hamburger.png",
       alt: "Hamburger",
-      width: 411,
-      height: 362
+      width: 1536,
+      height: 1024
     },
     layout: "feature",
     reveal: "right",
@@ -162,8 +162,8 @@ export const menuProducts: MenuProduct[] = [
     image: {
       src: "/images/products/cheeseburger.png",
       alt: "Cheeseburger",
-      width: 429,
-      height: 365
+      width: 1536,
+      height: 1024
     },
     layout: "standard",
     reveal: "left",
@@ -177,8 +177,8 @@ export const menuProducts: MenuProduct[] = [
     image: {
       src: "/images/products/chickenburger.png",
       alt: "Chickenburger",
-      width: 450,
-      height: 358
+      width: 1536,
+      height: 1024
     },
     layout: "standard",
     reveal: "up",

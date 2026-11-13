@@ -1125,7 +1125,6 @@
   --reveal-rotate: 0deg;
   --reveal-shift-x: clamp(18px, 2.6vw, 40px);
   --reveal-shift-y: clamp(24px, 3.6vw, 42px);
-  --photo-inset: -8% -3%;
   --photo-delay: calc(70ms + var(--card-index, 0) * 62ms);
   transition:
     opacity 640ms var(--ease-entrance) calc(var(--card-index, 0) * var(--stagger-card)),
@@ -1235,16 +1234,8 @@
   pointer-events: none;
 }
 
-.product-card--feature {
-  --photo-inset: -4% -2% -6%;
-}
-
 .product-card--feature .product-card__visual {
   aspect-ratio: 5 / 4;
-}
-
-.product-card--editorial {
-  --photo-inset: -8% -3%;
 }
 
 .product-card--editorial .product-card__visual {
@@ -1252,26 +1243,13 @@
   aspect-ratio: 4 / 3;
 }
 
-.product-card--editorial .product-card__photo {
-  top: 50%;
-  bottom: auto;
-  object-position: center;
-  transform: translate3d(
-      calc(var(--reveal-x) * var(--reveal-shift-x)),
-      calc(-50% + var(--reveal-y) * var(--reveal-shift-y)),
-      0
-    )
-    scale(0.88)
-    rotate(var(--reveal-rotate));
-}
-
 .product-card__photo {
   position: absolute;
-  inset: var(--photo-inset);
+  inset: 0;
   z-index: 2;
   display: block;
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   object-position: center;
   filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.36));
@@ -1293,28 +1271,6 @@
 .product-card.is-visible .product-card__photo {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-}
-
-/* Feature visuals are wider than the photo's natural width. Keep the photo at
-   its original size but centre it so the surrounding breathing room is even. */
-.product-card--feature .product-card__photo {
-  left: 50%;
-  right: auto;
-  transform: translate3d(
-      calc(-50% + var(--reveal-x) * var(--reveal-shift-x)),
-      calc(var(--reveal-y) * var(--reveal-shift-y)),
-      0
-    )
-    scale(0.88)
-    rotate(var(--reveal-rotate));
-}
-
-.product-card--feature.is-visible .product-card__photo {
-  transform: translate3d(-50%, 0, 0) scale(1) rotate(0deg);
-}
-
-.product-card--editorial.is-visible .product-card__photo {
-  transform: translate3d(0, -50%, 0) scale(1) rotate(0deg);
 }
 
 .product-card__fallback {
@@ -1915,14 +1871,6 @@
     transform: translate3d(0, 0, 0) scale(1.035) rotate(0deg);
   }
 
-  .product-card--feature.is-visible:hover .product-card__photo {
-    transform: translate3d(-50%, 0, 0) scale(1.035) rotate(0deg);
-  }
-
-  .product-card--editorial.is-visible:hover .product-card__photo {
-    transform: translate3d(0, -50%, 0) scale(1.035) rotate(0deg);
-  }
-
   .button--gold:hover {
     transform: translateY(-1px);
     filter: brightness(1.045);
@@ -2148,10 +2096,6 @@
     grid-template-rows: minmax(0, 1fr);
   }
 
-  .product-card--editorial {
-    --photo-inset: -6% 3% -6% -7%;
-  }
-
   .product-card--editorial .product-card__photo {
     object-position: left center;
   }
@@ -2223,7 +2167,6 @@
 
   .product-grid--filtered .product-card {
     grid-column: span 1;
-    --photo-inset: -8% -3%;
   }
 
   .product-grid--filtered .product-card__photo {
@@ -2465,7 +2408,6 @@
 
   .product-grid--filtered .product-card {
     grid-column: span 1;
-    --photo-inset: -8% -3%;
   }
 
   .product-grid--filtered .product-card__photo {
@@ -2565,19 +2507,6 @@
 
   .product-card.is-visible:hover .product-card__photo {
     transform: none;
-  }
-
-  .product-card--feature .product-card__photo,
-  .product-card--feature.is-visible:hover .product-card__photo {
-    transform: translate3d(-50%, 0, 0);
-  }
-
-  .product-card--editorial .product-card__photo {
-    transform: translate3d(0, -50%, 0);
-  }
-
-  .product-card--editorial.is-visible:hover .product-card__photo {
-    transform: translate3d(0, -50%, 0);
   }
 
   .product-card__frame .frame-corners__corner {
