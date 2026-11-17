@@ -1,9 +1,9 @@
 # AsChef'in Konak — Master Design System
 
-**Sürüm:** 2.0  
-**Son güncelleme:** 13 Kasım 2026  
-**Kapsam:** Dijital menü (mobil öncelikli, QR ile açılan web deneyimi)  
-**Kaynak:** UI UX Pro Max aramaları + frontend-design değerlendirmesi + mevcut marka varlıkları
+**Sürüm:** 3.0<br />
+**Son güncelleme:** 18 Kasım 2026<br />
+**Kapsam:** Dijital menü — 25 ürün, 9 kategori (mobil öncelikli, QR ile açılan web deneyimi)<br />
+**Kaynak:** UI UX Pro Max aramaları + frontend-design değerlendirmesi + mevcut marka varlıkları + 18 yeni ürün entegrasyonu
 
 ---
 
@@ -21,9 +21,11 @@ geniş tipografik hiyerarşi ve ürün odaklı sakin bir ritim kullanılır.
 1. **Tek sahne, güçlü giriş.** Hero, sayfanın akılda kalan tek büyük jestidir.
 2. **Altın bir vurgu, kaplama değil.** Altın; yalnızca hiyerarşi, fiyat ve
    etkileşim noktalarında kullanılır. Her yüzeye altın gradient uygulanmaz.
-3. **Fotoğraf doğru olmalı.** Her ürün yalnızca kendi şeffaf PNG'siyle temsil
-   edilir. Başka bir yemeğin fotoğrafı, stok görsel veya yanlış eşleşme
-   kullanılmaz. Fotoğraf yüklenemezse nötr marka yer tutucusu gösterilir.
+3. **Fotoğraf doğru olmalı.** Her ürün yalnızca kendi şeffaf görseliyle temsil
+   edilir. Yeni 18 üründe AVIF birincil, WebP ikincil, PNG son yedektir; eski
+   yedi ürün PNG ile sunulur. Başka bir yemeğin fotoğrafı, stok görsel veya
+   yanlış eşleşme kullanılmaz. Modern biçim yüklenemezse PNG'ye, PNG de
+   yüklenemezse nötr marka yer tutucusuna geçilir.
 4. **Okunabilirlik lüksten önce gelir.** Menü, telefonla ve ayakta okunur.
    Gövde metni mobilde en az 16 px'dir.
 5. **Hareket bir koreografi izler.** Hero açılışı, menü sahnesinin çizilmesi,
@@ -187,15 +189,22 @@ Satır yüksekliği `0.96`, letter-spacing `-0.022em`. 1440'ta üst sınır `6re
 
 | Genişlik | Beklenen düzen |
 |---|---|
-| 360px | Tek sütun dikey ürün kartları; logo + ikon telefon; 4 sekmeli kategori; hero CTA'ları alt alta 166px |
-| 390px | Aynı; hero CTA'ları yan yana 166px; hero görseli tam genişlik |
-| 768px | 2 sütun ürün (308.76px); hero split; header 80px; feature 16:9 tam genişlik; editorial iç düzeni yatay |
-| 1024px | 3 sütun ürün (266.3px); desktop gutter; CTA'lar yan yana |
+| 320px | Tek sütun dikey ürün kartları; logo + ikon telefon; 9 kategorili yatay kaydırmalı şerit; hero CTA'ları alt alta; hero görseli tam genişlik |
+| 390px | Aynı tek sütun; hero CTA'ları yan yana (en az 166px); kategori şeridi kaydırmalı; hero görseli tam genişlik |
+| 768px | 2 sütun ürün; hero split; header 80px; kategori sekmeleri sarar; arama 276px sağa hizalı; feature 16:9 tam genişlik; editorial iç düzeni yatay |
+| 1024px | 3 sütun ürün; desktop gutter; kategori sekmeleri tek blokta sarar; arama 300px; CTA'lar yan yana |
 | 1440px | 4 sütun ürün; 1280px içerik; header 88px; geniş negatif alan |
 
 768 ve üzerinde `dense` yerleşim, farklı yükseklikteki feature/editorial
 kartların oluşturduğu boşlukları kapatır. Kartlar birbirinden bağımsız menü
 öğeleridir; filtrelenmiş görünümde `row` akışına dönülerek sıra korunur.
+
+`dense` akışı DOM sırasını değiştirmez, ancak görsel yerleşimde sonraki
+kartları açılan boşluklara çekebilir. 1440px'te ilk görsel satır örneğin
+Soslu Döner, Hatay Dürüm ve Zurna Döner olarak oluşur; DOM ve erişilebilirlik
+sırası ise Soslu Döner, Hatay Dürüm, Ekmek Arası Döner, Zurna Döner'dir.
+Bu, editoryal ritim için bilinçli olarak kabul edilen bir görsel sıra
+farkıdır; klavye ve ekran okuyucu sırası DOM sırasıdır.
 
 Yatay taşma yasaktır. `overflow-x: hidden` tek başına çözüm değildir; her
 komponent kendi `min-width: 0` ve `max-width: 100%` kurallarını taşır.
@@ -257,22 +266,35 @@ Kurallar:
 
 ### 6.3 Kategori sekmeleri
 
-- Minimum 44 × 44px.
+- Dokuz sekme: Tümü, Döner, Köfte, Burger, Izgara, Kilo ile Lezzet, Kahvaltı,
+  Çorba & Pilav, İçecekler. Her sekme en az 44 × 44px'dir.
 - Varsayılan: şeffaf, `--color-text-muted`, 1px şeffaf kenarlık.
 - Aktif: `--color-accent-strong` metin, `rgba(210,172,102,.1)` zemin,
   `--color-line` kenarlık ve 2px altın iç alt çizgi (`inset 0 -2px 0`);
   `aria-pressed="true"`. Alt çizgiye ek elmas işaret kullanılmaz.
-- Mobilde 4 eşit sütun; 768+ yatay flex, min 84px; 1024+ min 92px. Etiket
-  taşmaz, 12px'in altına inmez.
+- 768 altında sekmeler tek satırlı yatay kaydırma şerididir: `min-width: 84px`,
+  `scroll-snap-type: inline proximity`, ince altın scrollbar ve dokunmatik
+  `-webkit-overflow-scrolling: touch`. Şeridin iki kenarında 22px'lik koyu
+  degrade okunabilirlik perdesi bulunur; perde `pointer-events: none` ve
+  dekoratiftir. Seçilen sekme kırpılıyorsa şerit onu yumuşakça ortalar;
+  `prefers-reduced-motion` açıksa bu kaydırma animasyonsuz yapılır.
+- 768 ve üzerinde sekmeler sarar (`flex-wrap: wrap`), yatay kaydırma ve
+  kenar perdeleri kapanır; scrollbar gizlenir. 768+'ta min 84px, 1024+'ta
+  min 92px. Etiket taşmaz, 12px'in altına inmez.
 - Odak halkası her durumda görünür.
 
 ### 6.4 Arama
 
 - Yükseklik 48px; 1px kenarlık; 2px radius.
+- Mobilde tam genişlik; 768+'ta 276px ve sağa hizalı; 1024+'ta 300px.
+  Kolon yönlü `.menu-toolbar` içinde `flex-basis` kullanılmaz; aksi hâlde
+  değer yükseklik olarak yorumlanır ve alan dikeyde şişer.
 - Sol ikon 18px; placeholder `--stone-500` üzeri.
 - `focus-within`: altın kenarlık + 3px yumuşak halka.
 - Temizleme düğmesi 44 × 44px, yalnızca metin varken görünür.
 - `aria-label` ve `aria-live` sonuç sayısı.
+- Regresyon kontrolü: arama alanı yüksekliği her viewport'ta 36–64px
+  aralığında kalmalıdır.
 
 ### 6.5 Ürün kartı
 
@@ -282,24 +304,34 @@ Kurallar:
   `--color-line`; radius 3px; boşta gölge yok.
 - Kartın içinde 5px inset `--color-frame-faint` ikinci çizgi; sağ üst ve sol
   alt köşede 23px Art Deco köşe işareti (opacity .56) bulunur.
-- Görsel alanı: sıcak radial zemin ve ince altın elips. Yedi ürünün tamamında
-  gerçek, şeffaf arka planlı PNG kullanılır; `object-fit: contain` ve orijinal
-  en-boy oranı korunur. Fotoğraf kırpılmaz, esnetilmez, siyah kutu içinde
-  gösterilmez.
+- Görsel alanı: sıcak radial zemin ve ince altın elips. 25 ürünün tamamında
+  gerçek, şeffaf arka planlı görsel kullanılır; `object-fit: contain` ve
+  orijinal en-boy oranı korunur. Fotoğraf kırpılmaz, esnetilmez, siyah kutu
+  içinde gösterilmez. Yeni 18 görsel 1200 × 800 RGBA'dır; eski yedi görsel
+  1536 × 1024 RGBA olarak değiştirilmeden korunur.
 - Fotoğraf `overflow: visible` görsel alanında negatif insetlerle
   (`--photo-inset`) çerçevenin üzerine taşar. Böylece ürün, kartın içine
   hapsedilmiş bir küçük resim değil, sahnenin önünde duran katmanlı bir yemek
   gibi okunur. Fotoğrafın altında yumuşak `drop-shadow` vardır.
 - Fotoğraf boyutları veri dosyasındaki gerçek piksel değerleriyle (`width` /
   `height`) verilir; `loading="lazy"`, `decoding="async"`, `draggable={false}`.
-  Hero görseli `fetchPriority="high"` ile yüklenir.
+  Yeni ürünlerde `<picture>` sırası AVIF → WebP → PNG'dir; eski yedi üründe
+  yalnızca PNG `<img>` bulunur. Hero görseli `fetchPriority="high"` ile yüklenir.
 - Kategori rozeti görselin sol üstünde; sağ altta 14px çizgi köşesi.
 - Başlık Cormorant Garamond; açıklama 0.95–0.97rem, 1.55 satır yüksekliği,
   `--color-text-muted`; başlık altında 30px altın mikro çizgi (feature'da 56px).
+  Açıklama yalnızca veri varsa render edilir. 25 üründen 9'unda açıklama
+  vardır; kalan 16 üründe paragraf DOM'a basılmaz, boş açıklama alanı veya
+  boşluk bırakılmaz.
 - Fiyat satırları yalnızca gerçek fiyatı olan ürünlerde, çift çizgili fiyat
   plakası içinde: etiket sol, noktalı ayraç, tutar sağ; tabular-nums.
-  Plakanın üst ortasında 7px elmas işareti vardır.
+  Plakanın üst ortasında 7px elmas işareti vardır. İki döner ürününde gramaj
+  başına iki fiyat satırı bulunur.
+- Sınırsız Çay'da ayrı "Ücretsiz" durumu kullanılır: plaka `Sınırsız` etiketi
+  ve büyük harfli `Ücretsiz` değeri gösterir; TL simgesi veya tutar yazılmaz.
+  `aria-label` "Sınırsız Çay: ücretsiz" olarak verilir.
 - Fiyat yoksa: "Fiyat bilgisi için arayın" bağlantısı; uydurma fiyat yoktur.
+  Bu durum yalnızca Soslu Döner'de geçerlidir.
 - Kartın tamamı tıklanabilir değildir; yalnızca gerçek bağlantılar tıklanır.
 - Hover yalnızca `(hover: hover) and (pointer: fine)` altında: 1px güçlü
   kenarlık, sınırlı sıcak gölge, iç çerçeve belirginleşmesi ve görselde 1.035
@@ -307,11 +339,18 @@ Kurallar:
 
 #### Varyantlar
 
-| Varyant | Ürünler | Mobil (<768) | 768–1023 | 1024–1359 | 1360+ |
-|---|---|---|---|---|---|
-| Standart | Zurna Döner, Ekmek Arası Köfte, Cheeseburger, Chickenburger | Dikey; görsel 4:3 | 2 sütunda 1 sütun; görsel 4:3; başlık 1.65rem | 3 sütunda 1 sütun; başlık 1.7rem | 4 sütunda 1 sütun; başlık 1.72rem |
-| Feature | Soslu Döner, Hamburger | Dikey; görsel 5:4 | 2 sütun; görsel 16:9; başlık 2.15rem | 2 sütun; başlık 2.3rem | 2 sütun; görsel 16:9; başlık 2.4rem |
-| Editorial | Ekmek Arası Döner | Dikey; görsel 4:3 | 2 sütun; 0.6fr görsel / 0.4fr metin, dikey ortalanmış; başlık 1.85rem | 2 sütun; başlık 1.95rem | 2 sütun; başlık 2rem |
+| Varyant | Adet | Mobil (<768) | 768–1023 | 1024–1359 | 1360+ |
+|---|---:|---|---|---|---|
+| Standart | 18 | Dikey; görsel 4:3 | 2 sütunda 1 sütun; görsel 4:3; başlık 1.65rem | 3 sütunda 1 sütun; başlık 1.7rem | 4 sütunda 1 sütun; başlık 1.72rem |
+| Feature | 4 | Dikey; görsel 5:4 | 2 sütun; görsel 16:9; başlık 2.15rem | 2 sütun; başlık 2.3rem | 2 sütun; görsel 16:9; başlık 2.4rem |
+| Editorial | 3 | Dikey; görsel 4:3 | 2 sütun; 0.6fr görsel / 0.4fr metin, dikey ortalanmış; başlık 1.85rem | 2 sütun; başlık 1.95rem | 2 sütun; başlık 2rem |
+
+- **Feature (4):** Soslu Döner, 4 Dürüm Kampanyası, Hamburger, Kahvaltı Tabağı.
+- **Editorial (3):** Ekmek Arası Döner, Izgara Tavuk Pirzola, 1 KG Tavuk Döner.
+- **Standart (18):** Hatay Dürüm, Zurna Döner, Ekmek Arası Köfte, Cheeseburger,
+  Chickenburger, Izgara Köfte, Izgara Tavuk Kulbaştı, 1 KG Köfte, Çorba,
+  Pilav, Büyük Ayran, Küçük Ayran, Pepsi, 7UP, Yedigün, Doğanay Şalgam, Su,
+  Sınırsız Çay.
 
 - Editorial görselde `aspect-ratio` kullanılmaz; kart yüksekliğini doldurur,
   sağ kenarında ince çizgi taşır. Gövde dikey ortalanır, footer boşluk bırakmaz.
@@ -334,16 +373,27 @@ Kurallar:
 - Hover'da yüzey altına döner, metin koyu mürekkep olur; mobilde tam genişlik.
 - Çalışma saati, kampanya veya teslimat iddiası yazılmaz (doğrulanmamış).
 
-### 6.7 Görsel fallback
+### 6.7 Görsel formatı ve fallback
 
-Ürün fotoğrafı yüklenemezse:
+Yeni ürünlerde kaynak seçimi tarayıcıya bırakılır:
 
+1. `<source type="image/avif">` — birincil.
+2. `<source type="image/webp">` — AVIF desteklenmiyorsa.
+3. `<img src="...png">` — son yedek.
+
+Çalışma zamanı hataları:
+
+- AVIF/WebP kaynağı seçildikten sonra ağ hatası oluşursa `onError` bir kez
+  tetiklenir; modern `<source>` öğeleri kaldırılır ve PNG yeni bir `key` ile
+  yeniden bağlanır. Böylece tarayıcı önbelleğindeki başarısız modern kayıt
+  yeniden denenmez.
+- PNG de yüklenemezse görsel alanında nötr marka yer tutucusu görünür: ince
+  altın eşkenar dörtgen halka + "AsChef'in Konak" etiketi. Yer tutucu
+  `aria-hidden`'dır; ürün adı, açıklaması ve fiyatı metin olarak okunmaya
+  devam eder.
 - Yanlış yemek görseli, stok fotoğraf veya eski SVG yemek çizimi gösterilmez.
-- Görsel alanında nötr marka yer tutucusu görünür: ince altın eşkenar dörtgen
-  halka + "AsChef'in Konak" etiketi. Yer tutucu `aria-hidden`'dır; ürün adı,
-  açıklaması ve fiyatı metin olarak okunmaya devam eder.
-- Fallback yalnızca `<img onError>` tetiklendiğinde devreye girer; normal
-  koşulda yedi gerçek PNG kullanılır.
+- Eski yedi ürün PNG-only olduğu için doğrudan PNG yükler; hata durumunda
+  aynı marka yer tutucusuna geçer. Normal koşulda 25 gerçek görsel kullanılır.
 
 ### 6.8 Art Deco çerçeve ve süsleme sistemi
 
@@ -403,7 +453,8 @@ Tüm hareket `transform` ve `opacity` üzerinden çalışır. `width`, `height`,
 
 Hero animasyonları sayfa yüklenirken bir kez çalışır; scroll ile tekrar
 tetiklenmez. Kullanıcı sayfaya menüden girerse içerik zaten görünür durumdadır.
-Hero görseli `soslu-doner.png` dosyasıdır ve `fetchPriority="high"` taşır.
+Hero görseli `soslu-tavuk-doner.png` dosyasıdır ve `fetchPriority="high"`
+taşır.
 
 ### 7.3 Scroll ile sahne çizimi
 
@@ -438,16 +489,36 @@ yoktur; sayfa normal hızda kaydırılır.
 | Ürün | `data-reveal` | Başlangıç |
 |---|---|---|
 | Soslu Döner | `up` | 24–42px aşağıdan, +1.2° |
+| Hatay Dürüm | `left` | 18–40px soldan, −2.2° |
 | Ekmek Arası Döner | `left` | 18–40px soldan, −2.2° |
 | Zurna Döner | `right` | 18–40px sağdan, +2.2° |
+| 4 Dürüm Kampanyası | `right` | 18–40px sağdan, +2.2° |
 | Ekmek Arası Köfte | `up` | 24–42px aşağıdan, +1.2° |
 | Hamburger | `right` | 18–40px sağdan, +2.2° |
 | Cheeseburger | `left` | 18–40px soldan, −2.2° |
 | Chickenburger | `up` | 24–42px aşağıdan, +1.2° |
+| Izgara Tavuk Pirzola | `left` | 18–40px soldan, −2.2° |
+| Izgara Köfte | `right` | 18–40px sağdan, +2.2° |
+| Izgara Tavuk Kulbaştı | `up` | 24–42px aşağıdan, +1.2° |
+| 1 KG Tavuk Döner | `left` | 18–40px soldan, −2.2° |
+| 1 KG Köfte | `right` | 18–40px sağdan, +2.2° |
+| Kahvaltı Tabağı | `up` | 24–42px aşağıdan, +1.2° |
+| Çorba | `left` | 18–40px soldan, −2.2° |
+| Pilav | `right` | 18–40px sağdan, +2.2° |
+| Büyük Ayran | `up` | 24–42px aşağıdan, +1.2° |
+| Küçük Ayran | `left` | 18–40px soldan, −2.2° |
+| Pepsi | `right` | 18–40px sağdan, +2.2° |
+| 7UP | `up` | 24–42px aşağıdan, +1.2° |
+| Yedigün | `left` | 18–40px soldan, −2.2° |
+| Doğanay Şalgam | `right` | 18–40px sağdan, +2.2° |
+| Su | `up` | 24–42px aşağıdan, +1.2° |
+| Sınırsız Çay | `left` | 18–40px soldan, −2.2° |
+
+Dağılım: 8 `up`, 9 `left`, 8 `right`.
 
 - Yatay kayma `clamp(18px, 2.6vw, 40px)`, dikey kayma
   `clamp(24px, 3.6vw, 42px)` aralığındadır. Her ürünün gecikmesi kart
-  sırasına göre 62ms artar; böylece yedi fotoğraf tek blok halinde değil,
+  sırasına göre 62ms artar; böylece 25 fotoğraf tek blok halinde değil,
   sırayla sahneye girer.
 - Feature fotoğrafı `translate3d(-50%, …)` tabanlı ortalamayı korur; editorial
   fotoğrafı `translate3d(…, -50%, …)` ile dikeyde ortalanır. Final durumda
@@ -499,10 +570,18 @@ giriş efekti yoktur.
 - Arama sonucu sayacı `aria-live="polite"` ve `aria-atomic="true"` taşır; boş
   durum metni de bu tek canlı bölgede duyurulur (çift duyuru yoktur).
 - Kategori seçimi `aria-pressed` ile bildirilir; geçiş sırasında grid
-  `aria-busy="true"` taşır.
+  `aria-busy="true"` taşır. Dokuz kategori sekmesi klavye ile sırayla
+  gezilebilir; mobil yatay şerit `role="group"` ve `aria-label="Menü
+  kategorileri"` taşır, kenar perdeleri dekoratiftir.
 - Dekoratif SVG, çerçeve çizgileri, amblem ve ikonlar `aria-hidden="true"`.
 - Her ürün fotoğrafının açıklayıcı `alt` metni vardır. Görsel yalnızca
   destekleyicidir; ürün adı, açıklaması ve fiyatı metinle verilir.
+- Açıklaması olmayan 16 üründe açıklama paragrafı hiç render edilmez; ekran
+  okuyucuya boş açıklama duyurulmaz.
+- Sınırsız Çay'ın fiyat grubu `aria-label="Sınırsız Çay: ücretsiz"` taşır;
+  görsel "Sınırsız / Ücretsiz" metni TL simgesi olmadan okunur.
+- Görsel yüklenemezse dekoratif yer tutucu `aria-hidden` kalır; ürünün adı,
+  varsa açıklaması ve fiyatı erişilebilir metin olarak korunur.
 - Renk tek başına anlam taşımaz.
 - `prefers-reduced-motion` desteklenir; animasyonlar bilgiyi geciktirmez,
   kartlar AT için her zaman DOM'da ve erişilebilirdir.
@@ -514,94 +593,143 @@ giriş efekti yoktur.
 ## 9. İçerik ve Güvenlik
 
 - Telefon: **0312 260 25 55** → `tel:03122602555`.
-- Menüde yedi ürün vardır. Fiyatlar yalnızca `src/data/prices.ts` içindeki
-  doğrulanmış değerlerdir:
-  - Ekmek Arası Döner: 100 gr **180 TL** / 120 gr **210 TL**
-  - Zurna Döner: 100 gr **200 TL** / 120 gr **230 TL**
+- Menüde **25 ürün** ve **9 kategori** vardır. Kategori dağılımı:
+  Döner 5, Köfte 1, Burger 3, Izgara 3, Kilo ile Lezzet 2, Kahvaltı 1,
+  Çorba & Pilav 2, İçecekler 8.
+- Fiyatlar yalnızca `src/data/prices.ts` içindeki doğrulanmış değerlerdir:
+  - Ekmek Arası Döner: 100 gr **170 TL** / 120 gr **200 TL**
+  - Zurna Döner: 120 gr **200 TL** / 140 gr **230 TL**
   - Ekmek Arası Köfte: **250 TL**
   - Hamburger: **250 TL**
   - Cheeseburger: **270 TL**
   - Chickenburger: **200 TL**
+  - Hatay Dürüm: **170 TL**
+  - 4 Dürüm Kampanyası: **600 TL**
+  - Izgara Tavuk Pirzola: **280 TL**
+  - Izgara Köfte: **280 TL**
+  - Izgara Tavuk Kulbaştı: **250 TL**
+  - 1 KG Tavuk Döner: **800 TL**
+  - 1 KG Köfte: **900 TL**
+  - Kahvaltı Tabağı: **150 TL**
+  - Çorba: **70 TL**
+  - Pilav: **50 TL**
+  - Büyük Ayran: **60 TL**
+  - Küçük Ayran: **40 TL**
+  - Pepsi: **60 TL**
+  - 7UP: **60 TL**
+  - Yedigün: **60 TL**
+  - Doğanay Şalgam: **60 TL**
+  - Su: **20 TL**
+  - Sınırsız Çay: **Ücretsiz**
   - Soslu Döner: fiyat verilmedi; kartta "Fiyat bilgisi için arayın"
     bağlantısı kullanılır. Fiyat uydurulmaz.
-- Düz "Köfte" ürünü menüden tamamen kaldırılmıştır; yalnızca
-  "Ekmek Arası Köfte" bulunur. Ürün sayısı 7'dir.
+- 9 üründe açıklama vardır: eski yedi ürünün tamamı, Hatay Dürüm ve
+  Doğanay Şalgam. Diğer 16 üründe açıklama alanı hiç render edilmez.
+- Düz "Köfte" başlığı kullanılmaz; ürünler "Ekmek Arası Köfte", "Izgara
+  Köfte" ve "1 KG Köfte" olarak ayrıştırılmıştır. Ürün sayısı 25'tir.
 - Çalışma saati, kampanya veya teslimat iddiası yazılmaz (doğrulanmamış).
 - API anahtarı, `.env` değeri veya gizli bilgi frontend kaynağına yazılmaz.
 - Dış görsel URL'sine bağımlılık yoktur; tüm varlıklar `public/` altındadır.
   Tek dış kaynak Google Fonts CSS/woff2 dosyalarıdır.
+- QR kodun hedef adresi ve Vercel alan adı bu entegrasyonda değiştirilmedi;
+  yayınlama ayrı onaya bağlıdır.
 - Referans video `design-references/menu-motion-reference.mp4` teslim
   edilmedi; yalnızca yazılı brifteki çerçeve ve hareket ilkeleri uygulandı.
   Jack Daniel's marka öğeleri, sarı zemin, ürün veya metinleri kullanılmadı.
-- Yedi ürün fotoğrafı teslim edilen `aschefin-menu-urun-gorselleri.zip`
-  arşivinden doğrulandı; dosyalar `public/images/products/` altındadır ve
-  SHA-256 eşleşmeleri birebirdir. Yanlış veya yinelenen görsel yoktur.
-- Fotoğraflar şeffaf PNG'dir; karakteristik boyutları:
-  `soslu-doner` 469 × 363, `ekmek-arasi-doner` 424 × 325,
-  `zurna-doner` 431 × 397, `ekmek-arasi-kofte` 451 × 353,
-  `hamburger` 411 × 362, `cheeseburger` 429 × 365,
-  `chickenburger` 450 × 358. Kenarlardaki küçük garnitür parçaları tedarik
-  edilen dosyanın parçasıdır; kırpılmamış veya maskelenmemiştir.
+- Eski yedi ürün görseli değiştirilmedi; `git diff` ile izlenen dosyalarda
+  değişiklik olmadığı doğrulandı. Boyutları 1536 × 1024 RGBA'dır ve yalnızca
+  PNG olarak sunulur.
+- Yeni 18 görsel QA'dan geçti ve 1200 × 800 RGBA şeffaf tuvale normalize
+  edildi. Her biri için PNG, WebP (q85) ve AVIF (q65) üretildi; alfa kanalı
+  korunur. Toplam boyutlar: 25 PNG **35.92 MB**, 18 WebP **3.36 MB**,
+  18 AVIF **1.74 MB**. WebP/AVIF yalnızca tarayıcı desteklediğinde indirilir;
+  PNG son yedektir.
+- Görsel adları ürün kimlikleriyle birebir eşleşir; yanlış veya yinelenen
+  görsel yoktur. Dosyalar `public/images/products/` altındadır.
+- Kenarlardaki küçük garnitür parçaları tedarik edilen dosyanın parçasıdır;
+  kırpılmamış veya maskelenmemiştir.
 - İki gerçek logo dosyası yeniden renklendirilmeden, oranları korunarak
   kullanılır: `aschefin-amblem-seffaf.png` (222 × 195) ve
   `aschefin-yazi-logosu-seffaf.png` (523 × 201).
+- **İşletme verisi düzeltmesi (18 Kasım 2026):** Basılı menü esas alınarak
+  Ekmek Arası Döner 100 gr **170 TL** / 120 gr **200 TL** olarak güncellendi;
+  Zurna Döner gramajları **120 gr / 140 gr** yapıldı, fiyatları **200 TL /
+  230 TL** olarak korundu. Diğer 23 ürünün fiyat ve gramajları değişmedi.
 - Yeni bağımlılık eklenmez; React + Vite + TypeScript korunur.
 
 ---
 
 ## 10. Responsive Kontrol Listesi ve Doğrulama
 
-**Son doğrulama:** 13 Kasım 2026 — üretim build'i (`npm run preview`),
-Playwright, 360 / 390 / 768 / 1440 px.
+**Son doğrulama:** 18 Kasım 2026 — üretim build'i (`npm run preview`),
+Playwright, 320 / 390 / 768 / 1440 px. Toplam **482 kontrol, 0 başarısız**.
 
 ### Düzen ve taşma
 
-| Genişlik | `scrollWidth` / `clientWidth` | `scrollHeight` | Görünen ve yüklenen kart | Yatay taşma |
-|---|---:|---:|---:|---|
-| 360px | 345 / 345 | 5060 | 7 / 7 | Yok |
-| 390px | 375 / 375 | 5156 | 7 / 7 | Yok |
-| 768px | 753 / 753 | 4159 | 7 / 7 | Yok |
-| 1440px | 1425 / 1425 | 3564 | 7 / 7 | Yok |
+| Genişlik | Kontrol | Ürün | AVIF | Kategori | Yatay taşma | Konsol hatası |
+|---|---:|---:|---:|---:|---:|---:|
+| 320px | 119 | 25 / 25 | 18 / 18 | 9 / 9 | 0px | 0 |
+| 390px | 119 | 25 / 25 | 18 / 18 | 9 / 9 | 0px | 0 |
+| 768px | 119 | 25 / 25 | 18 / 18 | 9 / 9 | 0px | 0 |
+| 1440px | 119 | 25 / 25 | 18 / 18 | 9 / 9 | 0px | 0 |
 
-- [x] 360px: tek sütun; hero CTA'ları alt alta 166px ve hizalı; logo lockup
-  taşmıyor; telefon bağlantısı erişilebilir; yatay taşma yok.
-- [x] 390px: hero CTA'ları yan yana 166px; skip link 115 × 49px; iletişim ve
-  footer düzeni tam; `scrollWidth` 375 < 390.
-- [x] 768px: 2 sütun × 308.76px, gap 16px; hero split; feature 16:9;
-  CTA'lar alt alta 166px hizalı; `scrollWidth` 753 < 768.
-- [x] 1440px: 4 sütunlu tam menü; tüm kartlar ölçüldü, DOM ve görsel sıra
-  uyumlu; `scrollWidth` 1425 < 1440; içerik 1280px.
-- [x] 1440px filtre: 3 kart × 377px, tek satır, tümü span 1; 1360+ kuralı
-  4 sütuna dönmüyor.
+- [x] 320px: tek sütun; hero CTA'ları alt alta; 9 kategorili şerit yatay
+  kaydırılıyor; logo lockup ve telefon bağlantısı erişilebilir; taşma yok.
+- [x] 390px: hero CTA'ları yan yana; kategori şeridinde seçili sekme gerektiğinde
+  otomatik ortalanıyor; iki kenar degradesi görünür; taşma yok.
+- [x] 768px: 2 sütun, gap 16px; hero split; feature 16:9; kategori sekmeleri
+  sarıyor; arama 276px ve sağa hizalı; taşma yok.
+- [x] 1440px: 4 sütunlu tam menü; içerik 1280px; ilk görsel satırda editoryal
+  `dense` yerleşimi gözlendi; taşma yok.
+- [x] 1440px filtre: tüm kartlar span 1; 1360+ kuralı 4 sütuna dönmüyor;
+  filtrelenmiş grid 3 sütun kalıyor.
 - [x] Hiçbir test genişliğinde `documentElement.scrollWidth > clientWidth`
   görülmedi; `min-width: 0` ve açık grid satırları korunuyor.
-- [x] Sayfa yatayda taşan görünür öğe taraması 390px'te boş döndü.
+- [x] Sayfa yatayda taşan görünür öğe taraması dört genişlikte de boş döndü.
+- [x] 1440px arama alanı 36–64px yükseklik aralığında; eski `flex-basis`
+  kaynaklı ~306px'lik dikey şişme regresyonu tekrar etmiyor.
 
 ### Ürünler, fiyatlar ve görseller
 
-- [x] Yedi ürün doğru sırada: Soslu Döner, Ekmek Arası Döner, Zurna Döner,
-  Ekmek Arası Köfte, Hamburger, Cheeseburger, Chickenburger.
-- [x] Düz "Köfte" başlığı DOM'da yok; yalnızca "Ekmek Arası Köfte" var.
-- [x] Fiyatlar: Ekmek Arası Döner 180 / 210 TL, Zurna Döner 200 / 230 TL,
-  Ekmek Arası Köfte 250 TL, Hamburger 250 TL, Cheeseburger 270 TL,
-  Chickenburger 200 TL. Soslu Döner'de fiyat yok; telefon bağlantısı var.
+- [x] 25 ürün doğru sırada ve doğru kategoride: Döner 5, Köfte 1, Burger 3,
+  Izgara 3, Kilo ile Lezzet 2, Kahvaltı 1, Çorba & Pilav 2, İçecekler 8.
+- [x] Düz "Köfte" başlığı DOM'da yok; "Ekmek Arası Köfte", "Izgara Köfte" ve
+  "1 KG Köfte" ayrı ürünler olarak doğrulandı.
+- [x] Tüm fiyatlar `prices.ts` ile eşleşiyor. Ekmek Arası Döner 170/200 TL,
+  Zurna Döner 120/140 gr ve 200/230 TL, Ekmek Arası Köfte 250 TL, Hamburger 250 TL,
+  Cheeseburger 270 TL, Chickenburger 200 TL, Hatay Dürüm 170 TL,
+  4 Dürüm Kampanyası 600 TL, Izgara Tavuk Pirzola 280 TL, Izgara Köfte
+  280 TL, Izgara Tavuk Kulbaştı 250 TL, 1 KG Tavuk Döner 800 TL, 1 KG Köfte
+  900 TL, Kahvaltı Tabağı 150 TL, Çorba 70 TL, Pilav 50 TL, Büyük Ayran
+  60 TL, Küçük Ayran 40 TL, Pepsi 60 TL, 7UP 60 TL, Yedigün 60 TL,
+  Doğanay Şalgam 60 TL, Su 20 TL. Soslu Döner'de fiyat yok; telefon bağlantısı
+  var.
+- [x] Sınırsız Çay'ın fiyat durumu `free`: "Sınırsız" ve "Ücretsiz" okunuyor;
+  TL simgesi veya tutar yok. `aria-label` doğru.
 - [x] Telefonun tüm bağlantıları `tel:03122602555`; görünen numara
   `0312 260 25 55`.
-- [x] Yedi ürün fotoğrafı da yüklendi (`naturalWidth > 0`), `object-fit:
-  contain`, reveal sonrası opacity 1; siyah kutu, kırpma veya esneme yok.
+- [x] 25 görselin tamamı yüklendi (`naturalWidth > 0`), `object-fit: contain`,
+  reveal sonrası opacity 1; siyah kutu, kırpma veya esneme yok.
+- [x] Yeni 18 ürünün `<picture>` sırası AVIF → WebP → PNG; kaynak tipleri ve
+  URL'leri doğru. 18 WebP ve 18 PNG yedeği 1200 × 800 olarak ayrıca
+  doğrulandı. Eski 7 görsel 1536 × 1024 PNG-only kaldı.
 - [x] Hero görseli ve iki logo dosyası yüklendi. Görsel yolları yerel ve
   doğru ürünlerle eşleşiyor.
 - [x] Yalnızca iki döner ürününde çoklu gramaj plakası var; tek fiyatlı
   ürünlerde tek satırlı plaka, Soslu Döner'de arama bağlantısı kullanılıyor.
+- [x] 9 üründe açıklama render edildi; 16 üründe açıklama öğesi DOM'da yok,
+  boş alan oluşmuyor.
+- [x] Arama "çay" için 1, "dürüm" için 2 sonuç veriyor; kategori filtreleri
+  ve "Filtreleri temizle" doğru çalışıyor.
 
 ### Hareket ve etkileşim
 
-- [x] Scroll reveal: hero, sahne rayları, bölüm başlığı, yedi ürün kartı ve
+- [x] Scroll reveal: hero, sahne rayları, bölüm başlığı, 25 ürün kartı ve
   iletişim bloğu eşiklerinde bir kez açılıyor; geri scroll'da tekrar
-  oynamıyor.
-- [x] Fotoğraf yönleri: Soslu/Köfte/Chickenburger aşağıdan, Ekmek Arası
-  Döner/Cheeseburger soldan, Zurna/Hamburger sağdan; her ürünün gecikmesi
-  sırayla artıyor.
+  oynamıyor. `prefers-reduced-motion: reduce` altında ölçümler kararlı.
+- [x] Fotoğraf yönleri: 8 `up`, 9 `left`, 8 `right`; her ürünün gecikmesi
+  kart sırasına göre artıyor. 25 kartın tamamı DOM'daki `data-reveal`
+  değeriyle eşleşiyor.
 - [x] Final transform'lar: feature fotoğrafları `translate3d(-50%, 0, 0)`,
   editorial fotoğrafı `translate3d(0, -50%, 0)`, standart kartlarda kimlik
   matrisi; tüm fotoğraflarda ölçek 1, dönüş 0°.
@@ -611,31 +739,50 @@ Playwright, 360 / 390 / 768 / 1440 px.
 - [x] Hızlı ardışık kategori tıklamalarında eski timer temizleniyor; çıkış
   sınıfı kilitli kalmıyor.
 - [x] "Köfte" filtresi 1 kart (Ekmek Arası Köfte, 250 TL), "Burger" filtresi
-  3 kart (250 / 270 / 200 TL), "Döner" filtresi 3 kart gösteriyor; "Tümü"
-  7 karta dönüyor. Boş arama durumu ayrı ve erişilebilir.
+  3 kart (250 / 270 / 200 TL), "Döner" filtresi 5 kart, "İçecekler" filtresi
+  8 kart gösteriyor; "Tümü" 25 karta dönüyor. Boş arama durumu ayrı ve
+  erişilebilir.
 - [x] `prefers-reduced-motion: reduce` (390px): kartlar opacity 1 ve yatay/
   dikey ortalamayı koruyan transform'la görünür; geçiş süresi 0.00001s;
   kategori tıklaması beklemesiz uygulanır. Animasyon yok.
 - [x] Klavye: ilk Tab skip link'i açıyor; hero telefon, sekmeler, arama ve
   kart bağlantılarında altın focus halkası görünüyor.
+- [x] Mobil kategori şeridi: 9 sekme, en az 44px dokunma alanı, yatay kaydırma
+  ve snap; seçili sekme kırpılıyorsa otomatik ortalanıyor; iki kenar degradesi
+  768 altında görünür, 768+ gizleniyor.
 - [x] Dekoratif çerçeveler ve amblem `aria-hidden`; odak halkasını örtmüyor.
 
 ### Konsol ve ağ
 
-- [x] Konsol: 0 hata, 0 uyarı (1440px ve 390px son turlarında).
-- [x] Yerel görseller 200/304; dış istek yalnızca Google Fonts CSS/woff2.
+- [x] Konsol: dört viewport'ta da 0 hata, 0 sayfa hatası.
+- [x] Başarısız ürün görseli isteği yok; yerel görseller 200/304, dış istek
+  yalnızca Google Fonts CSS/woff2.
 - [x] Hero dışındaki ürün fotoğrafları `loading="lazy"` ile yükleniyor;
   görünür olduklarında eksiksiz boyanıyor.
+- [x] Format matrisi: 18 WebP ve 18 PNG yedeği 1200 × 800 olarak istendi.
+- [x] Hata enjeksiyonu: Yedigün'ün AVIF + WebP istekleri engellendiğinde PNG
+  seçildi; Su'nun AVIF + WebP + PNG istekleri engellendiğinde dekoratif
+  yer tutucu göründü, kırık fotoğraf simgesi oluşmadı.
+- [x] Yatay taşma ölçümü dört genişlikte 0px; `documentElement.scrollWidth`
+  `clientWidth`'i aşmadı.
 
 ### Build ve lint
 
-- [x] `npm run build`: başarılı. `dist/index.html` 1.00 kB (gzip 0.53 kB);
-  CSS 42.68 kB (gzip 8.58 kB); JS 238.23 kB (gzip 73.33 kB); 25 modül,
-  144ms.
+- [x] `npm run build`: başarılı. `dist/index.html` 0.99 kB (gzip 0.52 kB);
+  CSS 42.70 kB (gzip 8.72 kB); JS 245.65 kB (gzip 74.87 kB); 25 modül,
+  268ms.
 - [x] `npm run lint`: 0 hata, 0 uyarı. `.claude/**` yerel skill betikleri
   lint kapsamı dışında tutulur; uygulama kodunda uyarı yoktur.
-- [x] Ekran görüntüleri depo kökünde `round1-*` ve `round2-*` adlarıyla
-  kaydedildi; `.playwright-mcp/` yalnızca oturum/artefakt dosyalarını tutar.
+- [x] Ekran görüntüleri `asset-staging/integration-qa/` altında
+  `round3-{mobile-320,mobile-390,tablet-768,desktop-1440}-{hero,menu-top,grid-top,icecekler,sinirsiz-cay}.png`
+  olarak kaydedildi. Dört viewport × beş görünüm = 20 dosya.
+- [x] Fiyat düzeltmesi için 4 hedefli kart görüntüsü:
+  `final-{desktop-1440,mobile-390}-{ekmek-arasi-doner,zurna-doner}.png`.
+  Ekmek Arası Döner 170/200 TL, Zurna Döner 120/140 gr ve 200/230 TL
+  görsel olarak doğrulandı.
+- [x] Playwright özeti: `mobile-320`, `mobile-390`, `tablet-768`,
+  `desktop-1440` için ürün 25/25, AVIF 18/18, kategori 9/9, taşma 0px,
+  konsol 0; toplam 482 kontrol, 0 başarısız.
 
 ### Bilinen eksikler
 
@@ -643,6 +790,14 @@ Playwright, 360 / 390 / 768 / 1440 px.
   brifteki ilkeler uygulandı.
 - Tedarik edilen ürün PNG'lerinde kenarlarda küçük garnitür yaprakları vardır;
   bunlar dosyaların parçası olduğu için kırpılmadı veya maskelenmedi.
+- `grid-auto-flow: row dense` nedeniyle 1440px'te görsel kart sırası DOM
+  sırasından farklı olabilir. Erişilebilirlik ve klavye sırası DOM sırasıdır;
+  bu durum bilinçli kabul edilmiştir.
+- Eski yedi görsel yalnızca PNG'dir; AVIF/WebP dönüşümü kullanıcı koruma
+  kuralı gereği yapılmadı. Yeni 18 görsel AVIF/WebP/PNG üçlüsüyle sunulur.
+- Entegrasyon yalnızca yerel projede tamamlandı; GitHub'a push ve Vercel
+  deploy yapılmadı. Yayın ayrı onaya bağlıdır.
 - Gelecekte yeni bir ürün eklenirse `src/data/menu.ts` içindeki görsel,
-  düzen ve giriş yönü alanları doldurulur; fiyat `src/data/prices.ts`'e
-  eklenir. Bileşenlere sabit fiyat yazılmaz.
+  düzen ve giriş yönü alanları doldurulur; yeni görsel için PNG yanında
+  AVIF/WebP üretilir; fiyat `src/data/prices.ts`'e eklenir. Bileşenlere
+  sabit fiyat yazılmaz.

@@ -1,5 +1,6 @@
 import { useState, type CSSProperties } from "react";
 import { formatPrice, restaurant, type MenuProduct } from "../data/menu";
+import { FREE_PRICE } from "../data/prices";
 import { useInView } from "../hooks/useInView";
 import { FrameCorners } from "./FrameCorners";
 import { ArrowUpRightIcon, PhoneIcon } from "./Icons";
@@ -10,6 +11,7 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product, index }: ProductCardProps) {
+  const [preferPng, setPreferPng] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const { ref, inView } = useInView<HTMLElement>({
     threshold: 0.12,
@@ -18,6 +20,23 @@ export function ProductCard({ product, index }: ProductCardProps) {
   const showImage = !imageFailed;
   const headingId = `product-${product.id}-title`;
   const singlePrice = product.price;
+  const hasModernFormat = Boolean(product.image.avif || product.image.webp);
+  const priceState = product.prices
+    ? "options"
+    : singlePrice === FREE_PRICE
+      ? "free"
+      : singlePrice !== undefined
+        ? "fixed"
+        : "ask";
+
+  const handleImageError = () => {
+    // AVIF/WebP seçildikten sonra oluşan ağ hatasında PNG'ye geç.
+    if (hasModernFormat && !preferPng) {
+      setPreferPng(true);
+      return;
+    }
+    setImageFailed(true);
+  };
 
   return (
     <article
@@ -31,9 +50,11 @@ export function ProductCard({ product, index }: ProductCardProps) {
         .join(" ")}
       style={{ "--card-index": index } as CSSProperties}
       aria-labelledby={headingId}
+      data-product-id={product.id}
       data-category={product.category}
       data-layout={product.layout}
       data-reveal={product.reveal}
+      data-price-state={priceState}
     >
       <span className="product-card__frame" aria-hidden="true">
         <FrameCorners corners={["tr", "bl"]} />
@@ -42,17 +63,26 @@ export function ProductCard({ product, index }: ProductCardProps) {
       <div className="product-card__layout">
         <div className="product-card__visual">
           {showImage ? (
-            <img
-              className="product-card__photo"
-              src={product.image.src}
-              alt={product.image.alt}
-              width={product.image.width}
-              height={product.image.height}
-              loading="lazy"
-              decoding="async"
-              draggable={false}
-              onError={() => setImageFailed(true)}
-            />
+            <picture className="product-card__picture">
+              {!preferPng && product.image.avif ? (
+                <source srcSet={product.image.avif} type="image/avif" />
+              ) : null}
+              {!preferPng && product.image.webp ? (
+                <source srcSet={product.image.webp} type="image/webp" />
+              ) : null}
+              <img
+                key={preferPng ? "png-fallback" : "primary"}
+                className="product-card__photo"
+                src={product.image.src}
+                alt={product.image.alt}
+                width={product.image.width}
+                height={product.image.height}
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+                onError={handleImageError}
+              />
+            </picture>
           ) : (
             <span className="product-card__fallback" aria-hidden="true">
               <span className="product-card__fallback-ring" />
@@ -73,7 +103,9 @@ export function ProductCard({ product, index }: ProductCardProps) {
             <span className="product-card__rule" aria-hidden="true" />
           </div>
 
-          <p className="product-card__description">{product.description}</p>
+          {product.description ? (
+            <p className="product-card__description">{product.description}</p>
+          ) : null}
 
           <div className="product-card__footer">
             {product.prices ? (
@@ -93,6 +125,21 @@ export function ProductCard({ product, index }: ProductCardProps) {
                     </span>
                   </div>
                 ))}
+              </div>
+            ) : singlePrice === FREE_PRICE ? (
+              <div
+                className="price-plate price-plate--free"
+                role="group"
+                aria-label={`${product.name}: ücretsiz`}
+              >
+                <span className="price-plate__gem" aria-hidden="true" />
+                <div className="price-row">
+                  <span className="price-row__label">Sınırsız</span>
+                  <span className="price-row__rule" aria-hidden="true" />
+                  <span className="price-row__amount price-row__amount--free">
+                    {FREE_PRICE}
+                  </span>
+                </div>
               </div>
             ) : singlePrice !== undefined ? (
               <div

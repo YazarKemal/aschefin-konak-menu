@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   menuCategories,
   menuProducts,
@@ -37,6 +37,7 @@ function App() {
   const [displayCategory, setDisplayCategory] = useState<CategoryFilter>("Tümü");
   const [transitionKey, setTransitionKey] = useState(0);
   const [search, setSearch] = useState("");
+  const categoryTabsRef = useRef<HTMLDivElement>(null);
 
   const {
     ref: menuStageRef,
@@ -75,6 +76,40 @@ function App() {
     };
   }, [activeCategory, displayCategory]);
 
+  // Mobilde yatay kayan kategori şeridinde seçili sekmeyi görünür tut.
+  useEffect(() => {
+    const container = categoryTabsRef.current;
+    const activeTab = container?.querySelector<HTMLElement>(
+      '.category-tab[aria-pressed="true"]'
+    );
+
+    if (
+      !container ||
+      !activeTab ||
+      container.scrollWidth <= container.clientWidth
+    ) {
+      return;
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const tabRect = activeTab.getBoundingClientRect();
+    const isClipped =
+      tabRect.left < containerRect.left || tabRect.right > containerRect.right;
+
+    if (!isClipped) {
+      return;
+    }
+
+    container.scrollTo({
+      left:
+        container.scrollLeft +
+        (tabRect.left - containerRect.left) -
+        container.clientWidth / 2 +
+        tabRect.width / 2,
+      behavior: prefersReducedMotion() ? "auto" : "smooth"
+    });
+  }, [activeCategory]);
+
   const filteredProducts = useMemo(() => {
     const term = normalizeForSearch(search.trim());
 
@@ -82,7 +117,7 @@ function App() {
       const matchesCategory =
         displayCategory === "Tümü" || product.category === displayCategory;
       const searchableText = normalizeForSearch(
-        `${product.name} ${product.category} ${product.description}`
+        `${product.name} ${product.category} ${product.description ?? ""}`
       );
       const matchesSearch = !term || searchableText.includes(term);
 
@@ -164,8 +199,8 @@ function App() {
               </h1>
 
               <p className="hero__lede">
-                Döner, köfte ve burger; mutfağımızda özenle hazırlanır, sıcak
-                servis edilir.
+                Döner, köfte, ızgara ve daha fazlası; mutfağımızda özenle
+                hazırlanır, sıcak servis edilir.
               </p>
 
               <div className="hero__actions">
@@ -200,16 +235,30 @@ function App() {
 
             <figure className="hero__visual">
               <div className="hero__art">
-                <img
-                  className="hero__food"
-                  src={heroProduct.image.src}
-                  alt={heroProduct.image.alt}
-                  width={heroProduct.image.width}
-                  height={heroProduct.image.height}
-                  fetchPriority="high"
-                  decoding="async"
-                  draggable={false}
-                />
+                <picture className="hero__picture">
+                  {heroProduct.image.avif ? (
+                    <source
+                      srcSet={heroProduct.image.avif}
+                      type="image/avif"
+                    />
+                  ) : null}
+                  {heroProduct.image.webp ? (
+                    <source
+                      srcSet={heroProduct.image.webp}
+                      type="image/webp"
+                    />
+                  ) : null}
+                  <img
+                    className="hero__food"
+                    src={heroProduct.image.src}
+                    alt={heroProduct.image.alt}
+                    width={heroProduct.image.width}
+                    height={heroProduct.image.height}
+                    fetchPriority="high"
+                    decoding="async"
+                    draggable={false}
+                  />
+                </picture>
                 <span className="hero__art-frame" aria-hidden="true">
                   <FrameCorners corners={["tl", "br"]} />
                 </span>
@@ -259,33 +308,36 @@ function App() {
                   <p className="section-heading__label">AsChef'in Konak</p>
                   <h2 id="menu-title">Menümüz</h2>
                   <p className="section-heading__copy">
-                    Döner, köfte ve burger çeşitlerimizden size uygun olanı
-                    seçin. Döner fiyatları gramaj seçeneğine göre
-                    belirtilmiştir.
+                    Dönerden ızgaraya, kahvaltıdan içeceklere uzanan
+                    menümüzden seçiminizi yapın. Döner fiyatları gramaj
+                    seçeneğine göre belirtilmiştir.
                   </p>
                 </div>
 
                 <div className="menu-toolbar">
-                  <div
-                    className="category-tabs"
-                    role="group"
-                    aria-label="Menü kategorileri"
-                  >
-                    {menuCategories.map((category) => {
-                      const isActive = activeCategory === category;
+                  <div className="category-tabs-shell">
+                    <div
+                      ref={categoryTabsRef}
+                      className="category-tabs"
+                      role="group"
+                      aria-label="Menü kategorileri"
+                    >
+                      {menuCategories.map((category) => {
+                        const isActive = activeCategory === category;
 
-                      return (
-                        <button
-                          key={category}
-                          type="button"
-                          className="category-tab"
-                          aria-pressed={isActive}
-                          onClick={() => setActiveCategory(category)}
-                        >
-                          {category}
-                        </button>
-                      );
-                    })}
+                        return (
+                          <button
+                            key={category}
+                            type="button"
+                            className="category-tab"
+                            aria-pressed={isActive}
+                            onClick={() => setActiveCategory(category)}
+                          >
+                            {category}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   <div className="menu-search">
@@ -370,7 +422,8 @@ function App() {
                 )}
 
                 <p className="menu-section__note">
-                  Güncel menü ve fiyat bilgisi için bizi arayabilirsiniz.
+                  Sınırsız çay ücretsizdir. Güncel menü ve fiyat bilgisi için
+                  bizi arayabilirsiniz.
                 </p>
               </div>
             </div>
@@ -423,7 +476,9 @@ function App() {
           >
             <BrandLockup />
           </a>
-          <p className="site-footer__tagline">Döner, köfte ve burger.</p>
+          <p className="site-footer__tagline">
+            Döner, köfte, ızgara ve daha fazlası.
+          </p>
           <p className="site-footer__copyright">
             © {currentYear} {restaurant.name}
           </p>

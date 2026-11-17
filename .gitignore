@@ -27,3 +27,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local QA and Playwright artifacts
+/round1-*.png
+/round2-*.png
+/v2-*.json
+/.claude/
+/.playwright-mcp/
+/asset-staging/
